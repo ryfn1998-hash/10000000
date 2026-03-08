@@ -8,41 +8,52 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
     <style>
-        /* --- 強制滿版與基礎設定 --- */
+        /* --- 基礎設定 --- */
         html, body { height: 100%; margin: 0; padding: 0; background: linear-gradient(135deg, #0a0f1e 0%, #020205 100%); color: white; overflow-x: hidden; }
         body { display: flex; flex-direction: column; min-height: 100vh; font-family: 'Inter', "Microsoft JhengHei", sans-serif; box-sizing: border-box; padding-bottom: 80px; }
 
-        /* --- 修正後的公告欄 (不中斷跑馬燈) --- */
+        /* --- 公告欄 (100% 滿版) --- */
         .announcement-bar { width: 100%; background: #000; border-bottom: 2px solid #007aff; padding: 10px 0; display: flex; align-items: center; overflow: hidden; position: sticky; top: 0; z-index: 1000; }
         .announcement-tag { background: #007aff; color: white; padding: 4px 15px; font-weight: 900; font-size: 14px; white-space: nowrap; margin-left: 10px; border-radius: 4px; z-index: 5; }
         .marquee-container { flex: 1; overflow: hidden; position: relative; display: flex; align-items: center; height: 20px; }
         .marquee-text { position: absolute; white-space: nowrap; color: #00f2ff; font-weight: 700; font-size: 14px; will-change: transform; animation: marquee-smooth 20s linear infinite; }
         @keyframes marquee-smooth { 0% { transform: translateX(100vw); } 100% { transform: translateX(-100%); } }
 
-        /* --- 主容器與毛玻璃卡片 --- */
-        .container { width: 100%; max-width: 500px; padding: 20px 10px; display: flex; flex-direction: column; align-items: center; flex: 1; justify-content: flex-start; margin: 0 auto; }
+        /* --- 【修正重點】主容器 - 移除 max-width，實現全滿版 --- */
+        .container { 
+            width: 100%; 
+            padding: 20px 15px; /* 保持左右 15px 的呼吸空間，不至於死貼邊緣 */
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            flex: 1; 
+            justify-content: flex-start; 
+            margin: 0; 
+            box-sizing: border-box; 
+        }
+
         .glass-panel { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); border-radius: 15px; }
         .info-bar { margin-bottom: 20px; padding: 12px 25px; text-align: center; width: 100%; box-sizing: border-box; }
         
-        /* --- 滾輪計數器 --- */
-        .odometer-wrapper { position: relative; padding: 15px 30px; margin-bottom: 30px; overflow: hidden; display: flex; justify-content: center; align-items: center; border-radius: 20px; }
+        /* --- 計數器 --- */
+        .odometer-wrapper { position: relative; width: 100%; max-width: 400px; padding: 15px 10px; margin-bottom: 30px; overflow: hidden; display: flex; justify-content: center; align-items: center; border-radius: 20px; box-sizing: border-box; }
         .odometer-wrapper::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, transparent 35%, #007aff 45%, #00f2ff 55%, transparent 70%); animation: fluid-rotate 10s linear infinite; z-index: 0; opacity: 0.2; filter: blur(20px); }
         @keyframes fluid-rotate { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .odometer { position: relative; z-index: 1; display: flex; justify-content: center; align-items: center; font-size: 80px; font-weight: 900; height: 100px; line-height: 100px; overflow: hidden; letter-spacing: -3px; text-shadow: 0 0 15px rgba(0, 242, 255, 0.5); }
-        .digit-box { height: 100px; width: 55px; position: relative; overflow: hidden; display: none; }
+        .odometer { position: relative; z-index: 1; display: flex; justify-content: center; align-items: center; font-size: 65px; /* 縮小一點字體，避免小螢幕換行 */ font-weight: 900; height: 100px; line-height: 100px; overflow: hidden; letter-spacing: -3px; text-shadow: 0 0 15px rgba(0, 242, 255, 0.5); }
+        .digit-box { height: 100px; width: 45px; position: relative; overflow: hidden; display: none; }
         .digit-box.active { display: block; }
         .digit-list { position: absolute; width: 100%; transition: transform 0.6s cubic-bezier(0.45, 0.05, 0.55, 0.95); top: 0; left: 0; }
         .digit-list div { height: 100px; text-align: center; }
-        .comma { width: 20px; text-align: center; font-size: 70px; color: #fff; display: none; padding-top: 5px; font-weight: 900; }
+        .comma { width: 15px; text-align: center; font-size: 55px; color: #fff; display: none; padding-top: 5px; font-weight: 900; }
         .comma.active { display: block; }
         
-        /* --- 按鈕與特效 --- */
-        .white-btn { outline: none; border: 1px solid #00f2ff; cursor: pointer; background: linear-gradient(135deg, #007aff 0%, #0045ff 100%); color: #fff; padding: 18px 0; width: 100%; max-width: 300px; font-size: 26px; font-weight: 900; border-radius: 100px; transition: 0.2s; box-shadow: 0 4px 15px rgba(0, 122, 255, 0.5); }
+        /* --- 按鈕 --- */
+        .white-btn { outline: none; border: 1px solid #00f2ff; cursor: pointer; background: linear-gradient(135deg, #007aff 0%, #0045ff 100%); color: #fff; padding: 18px 0; width: 100%; max-width: 320px; font-size: 26px; font-weight: 900; border-radius: 100px; transition: 0.2s; box-shadow: 0 4px 15px rgba(0, 122, 255, 0.5); }
         .white-btn:active { transform: scale(0.95); }
         .firework-p { position: fixed; pointer-events: none; z-index: 100; animation: fw-explode 1s ease-out forwards; width: 4px; height: 4px; border-radius: 50%; background: #00f2ff; box-shadow: 0 0 5px #00f2ff; }
         @keyframes fw-explode { 0% { transform: translate(0,0) scale(1); opacity: 1; } 100% { transform: translate(var(--ex), var(--ey)) scale(0); opacity: 0; } }
 
-        /* --- 儀表板與排行榜 --- */
+        /* --- 數據卡片與排行榜 (自動適應寬度) --- */
         .dashboard-card, .leaderboard-card { padding: 20px; width: 100%; margin-top: 20px; box-sizing: border-box; }
         .progress-fill { width: 0%; height: 100%; background: linear-gradient(90deg, #007aff, #00f2ff, #007aff); background-size: 200% 100%; animation: gradient-move 3s linear infinite; box-shadow: 0 0 10px #00f2ff; }
         @keyframes gradient-move { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
@@ -53,19 +64,21 @@
         .dynamic-ad-box { width: 100%; margin-top: 30px; min-height: 180px; padding: 30px 20px; text-align: center; box-sizing: border-box; display: flex; align-items: center; justify-content: center; transition: background 0.8s ease; }
         #adBoxContent { font-size: 24px; font-weight: 900; color: #fff; text-shadow: 0 0 10px rgba(0,0,0,0.5); white-space: pre-wrap; transition: opacity 0.5s; }
 
-        /* --- 懸浮按鈕與彈窗 --- */
-        .fab-container { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 2000; }
-        .fab-btn { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 4px 15px rgba(0,0,0,0.4); transition: transform 0.2s; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
-        .btn-btc { background: rgba(247, 147, 26, 0.2); color: #f7931a; font-size: 24px; font-weight: 900; }
-        .btn-discord { background: rgba(88, 101, 242, 0.2); }
-        .btn-discord svg { width: 24px; height: 24px; fill: white; }
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 3000; display: none; justify-content: flex-end; align-items: flex-end; padding: 20px; opacity: 0; transition: opacity 0.3s; }
+        /* --- 比特幣彈窗 (保持居中) --- */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 3000; display: none; justify-content: center; align-items: center; padding: 20px; opacity: 0; transition: opacity 0.3s; }
         .modal-overlay.open { display: flex; opacity: 1; }
-        .btc-modal { width: 100%; max-width: 320px; padding: 20px; text-align: center; box-sizing: border-box; }
-        .address-container { background: rgba(0,0,0,0.3); border-radius: 8px; padding: 12px; border: 1px solid rgba(255,255,255,0.05); cursor: pointer; position: relative; margin-top: 10px; }
-        .copy-toast { position: absolute; bottom: 100%; left: 50%; transform: translate(-50%, -10px); background: #007aff; color: white; font-size: 10px; padding: 4px 8px; border-radius: 4px; opacity: 0; transition: 0.2s; }
-        .address-container.copied .copy-toast { opacity: 1; transform: translate(-50%, -15px); }
+        .btc-modal { width: 100%; max-width: 350px; padding: 30px 20px; text-align: center; box-sizing: border-box; transform: scale(0.8); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .modal-overlay.open .btc-modal { transform: scale(1); }
+        .address-container { background: rgba(0,0,0,0.5); border-radius: 12px; padding: 18px 10px; border: 1px solid rgba(247, 147, 26, 0.3); cursor: pointer; position: relative; margin-top: 15px; }
+        .copy-toast { position: absolute; top: -30px; left: 50%; transform: translateX(-50%); background: #f7931a; color: white; font-size: 12px; padding: 4px 12px; border-radius: 20px; opacity: 0; transition: 0.3s; }
+        .address-container.copied .copy-toast { opacity: 1; transform: translateX(-50%) translateY(-5px); }
 
+        /* --- 懸浮鈕與頁尾 --- */
+        .fab-container { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 2000; }
+        .fab-btn { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 4px 15px rgba(0,0,0,0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+        .btn-btc { background: rgba(247, 147, 26, 0.3); color: #f7931a; font-size: 24px; font-weight: 900; }
+        .btn-discord { background: rgba(88, 101, 242, 0.3); }
+        .btn-discord svg { width: 24px; height: 24px; fill: white; }
         .footer { width: 100%; margin-top: auto; padding: 30px 0; border-top: 1px solid rgba(255, 255, 255, 0.05); display: flex; flex-direction: column; align-items: center; gap: 15px; background: rgba(0,0,0,0.2); backdrop-filter: blur(5px); }
         .footer-logo { max-width: 200px; opacity: 0.6; }
     </style>
@@ -81,13 +94,15 @@
 
 <div class="container">
     <div class="info-bar glass-panel">
-        <div style="font-size: 13px; color: #00f2ff; font-weight: 900; text-shadow: 0 0 5px #00f2ff;"><span id="onlineText">Connecting...</span></div>
+        <div style="font-size: 13px; color: #00f2ff; font-weight: 900;"><span id="onlineText">Connecting...</span></div>
         <div style="font-size: 11px; color: #aaa;"><span id="ui-srv">伺服器時間</span>：<span id="nyTime">--:--:--</span></div>
         <div style="font-size: 10px; color: #888;"><span id="ui-visit">累計瀏覽</span>：<span id="visitCount">0</span></div>
     </div>
     
-    <div id="ui-title" style="font-size: 15px; color: #fff; font-weight: 900; letter-spacing: 5px; margin-bottom: 10px; text-shadow: 0 0 10px #007aff;">RYFN GLOBAL CHALLENGE</div>
+    <div id="ui-title" style="font-size: 15px; color: #fff; font-weight: 900; letter-spacing: 5px; margin-bottom: 10px; text-align: center;">RYFN GLOBAL CHALLENGE</div>
+    
     <div class="odometer-wrapper glass-panel"><div id="roller" class="odometer"></div></div>
+    
     <button id="ui-btn" class="white-btn" onclick="handleClick(event)">立即點擊 PUSH</button>
 
     <div class="dashboard-card glass-panel">
@@ -95,10 +110,10 @@
             <span id="ui-db" style="font-size:12px; font-weight:900; color:#aaa;">數據儀表板</span>
             <span id="percentText" style="font-size:12px; color:#00f2ff; font-weight:900;">0.00%</span>
         </div>
-        <div style="width:100%; height:10px; background:rgba(255,255,255,0.05); border-radius:10px; overflow:hidden; margin-bottom:10px; border: 1px solid rgba(255,255,255,0.05);">
+        <div style="width:100%; height:10px; background:rgba(255,255,255,0.05); border-radius:10px; overflow:hidden;">
             <div id="fillBar" class="progress-fill"></div>
         </div>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top: 15px;">
             <div style="background:rgba(255,255,255,0.02); padding:10px; border-radius:8px; border: 1px solid rgba(255,255,255,0.05);">
                 <div id="ui-rem" style="font-size:9px; color:#888;">REMAINING</div>
                 <div id="remainingValue" style="font-size:15px; font-weight:900;">----</div>
@@ -127,11 +142,12 @@
 
 <div class="modal-overlay" id="btcModalOverlay" onclick="closeBtcModal()">
     <div class="btc-modal glass-panel" onclick="event.stopPropagation()">
-        <div style="font-size: 14px; font-weight: 900; color: #f7931a; margin-bottom: 10px;">BTC DONATION</div>
+        <div style="font-size: 18px; font-weight: 900; color: #f7931a; margin-bottom: 10px;">DONATE BTC</div>
         <div class="address-container" onclick="copyBtcAddress()">
-            <div class="copy-toast">已複製！</div>
-            <div style="font-size: 11px; color: #aaa; font-family: monospace;">bc1qtsc3kpt5uy5h496v5v9g2h20654dl4mzm4q265</div>
+            <div class="copy-toast">已複製地址！</div>
+            <div style="font-size: 11px; color: #ddd; font-family: monospace; word-break: break-all;">bc1qtsc3kpt5uy5h496v5v9g2h20654dl4mzm4q265</div>
         </div>
+        <button onclick="closeBtcModal()" style="margin-top: 20px; background: none; border: 1px solid rgba(255,255,255,0.2); color: #888; padding: 5px 15px; border-radius: 5px; cursor: pointer;">關閉</button>
     </div>
 </div>
 
@@ -141,6 +157,7 @@
 </footer>
 
 <script>
+    // --- Firebase 配置 (已校正) ---
     const firebaseConfig = {
         apiKey: "AIzaSyAhstatd52tItPyVGs0yFpMr72r9yFpVY",
         authDomain: "project-3642988709307035960.firebaseapp.com",
@@ -151,20 +168,20 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
     
-    // --- 跑馬燈修復與監聽 ---
+    // 跑馬燈
     db.ref('admin_settings/marquee_text').on('value', s => {
         const el = document.getElementById('topMarqueeText');
         el.innerText = s.val() || "Welcome to Global Challenge.";
         el.style.animation = 'none'; el.offsetHeight; el.style.animation = 'marquee-smooth 20s linear infinite';
     });
 
-    // --- 在線人數監控 ---
+    // 在線人數
     const presenceRef = db.ref('presence');
     const pres = presenceRef.push();
     db.ref('.info/connected').on('value', s => { if(s.val()) { pres.onDisconnect().remove(); pres.set(true); } });
     presenceRef.on('value', s => { document.getElementById('onlineText').innerText = s.numChildren() + " Online"; });
 
-    // --- 點擊與國家統計 ---
+    // 點擊處理
     let userCountry = "TW";
     fetch('https://ipapi.co/json/').then(r => r.json()).then(d => userCountry = d.country_code || "TW");
 
@@ -182,24 +199,23 @@
         }
     }
 
-    // --- 國家排行榜監聽 ---
+    // 排行榜
     db.ref('country_stats').on('value', s => {
         const list = document.getElementById('leaderboardList');
         const sorted = Object.entries(s.val() || {}).sort((a,b) => b[1]-a[1]).slice(0,5);
         list.innerHTML = sorted.map(([code, val], i) => `
             <div class="leaderboard-item ${i===0?'rank-1':''}">
-                <div><b style="color:#aaa">${i+1}.</b> ${code}</div>
+                <div><b>${i+1}.</b> ${code}</div>
                 <div style="color:#00f2ff; font-weight:900;">${val.toLocaleString()}</div>
             </div>`).join('');
     });
 
-    // --- 廣告輪播邏輯 ---
+    // 廣告輪播
     let adList = []; let currentAdIdx = 0; let adTimer = null;
     db.ref('admin_settings/ads').on('value', s => {
         adList = s.val() ? Object.values(s.val()) : [];
         if (adList.length > 0 && !adTimer) rotateAds();
     });
-
     function rotateAds() {
         if (adList.length === 0) return;
         const ad = adList[currentAdIdx];
@@ -214,7 +230,7 @@
         adTimer = setTimeout(() => { currentAdIdx = (currentAdIdx + 1) % adList.length; rotateAds(); }, (ad.duration || 5) * 1000);
     }
 
-    // --- 計數器渲染 ---
+    // 計數器
     function initRoller() {
         const r = document.getElementById('roller'); r.innerHTML = "";
         for (let i = 0; i < 10; i++) {
@@ -226,7 +242,6 @@
         }
     }
     initRoller();
-
     function render(num) {
         let s = num.toString().padStart(10, "0");
         for (let i = 0; i < 10; i++) {
@@ -248,7 +263,7 @@
     db.ref('visit_count').transaction(c => (c || 0) + 1);
     db.ref('visit_count').on('value', s => document.getElementById('visitCount').innerText = (s.val() || 0).toLocaleString());
 
-    // --- FAB 功能 ---
+    // 彈窗
     function openBtcModal() { document.getElementById('btcModalOverlay').classList.add('open'); }
     function closeBtcModal() { document.getElementById('btcModalOverlay').classList.remove('open'); }
     function copyBtcAddress() {
@@ -258,7 +273,6 @@
         setTimeout(() => container.classList.remove('copied'), 2000);
     }
 
-    // --- 語言與時間 ---
     function autoLang() {
         const lang = navigator.language.split('-')[0] === 'zh' ? 'zh' : 'en';
         const d = { 
