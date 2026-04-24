@@ -22,7 +22,7 @@
         /* --- @FR科技公司版權所有 嚴禁轉載本網站所有程式碼 --- */
         .container { 
             width: 100%; 
-            padding: 20px 15px; /* 保持左右 15px 的呼吸空間，不至於死貼邊緣 */
+            padding: 20px 15px; 
             display: flex; 
             flex-direction: column; 
             align-items: center; 
@@ -39,7 +39,7 @@
         .odometer-wrapper { position: relative; width: 100%; max-width: 400px; padding: 15px 10px; margin-bottom: 30px; overflow: hidden; display: flex; justify-content: center; align-items: center; border-radius: 20px; box-sizing: border-box; }
         .odometer-wrapper::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, transparent 35%, #007aff 45%, #00f2ff 55%, transparent 70%); animation: fluid-rotate 10s linear infinite; z-index: 0; opacity: 0.2; filter: blur(20px); }
         @keyframes fluid-rotate { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .odometer { position: relative; z-index: 1; display: flex; justify-content: center; align-items: center; font-size: 65px; /* 縮小一點字體，避免小螢幕換行 */ font-weight: 900; height: 100px; line-height: 100px; overflow: hidden; letter-spacing: -3px; text-shadow: 0 0 15px rgba(0, 242, 255, 0.5); }
+        .odometer { position: relative; z-index: 1; display: flex; justify-content: center; align-items: center; font-size: 65px; font-weight: 900; height: 100px; line-height: 100px; overflow: hidden; letter-spacing: -3px; text-shadow: 0 0 15px rgba(0, 242, 255, 0.5); }
         .digit-box { height: 100px; width: 45px; position: relative; overflow: hidden; display: none; }
         .digit-box.active { display: block; }
         .digit-list { position: absolute; width: 100%; transition: transform 0.6s cubic-bezier(0.45, 0.05, 0.55, 0.95); top: 0; left: 0; }
@@ -53,7 +53,7 @@
         .firework-p { position: fixed; pointer-events: none; z-index: 100; animation: fw-explode 1s ease-out forwards; width: 4px; height: 4px; border-radius: 50%; background: #00f2ff; box-shadow: 0 0 5px #00f2ff; }
         @keyframes fw-explode { 0% { transform: translate(0,0) scale(1); opacity: 1; } 100% { transform: translate(var(--ex), var(--ey)) scale(0); opacity: 0; } }
 
-        /* --- 數據卡片與排行榜 (自動適應寬度) --- */
+        /* --- 數據卡片與排行榜 --- */
         .dashboard-card, .leaderboard-card { padding: 20px; width: 100%; margin-top: 20px; box-sizing: border-box; }
         .progress-fill { width: 0%; height: 100%; background: linear-gradient(90deg, #007aff, #00f2ff, #007aff); background-size: 200% 100%; animation: gradient-move 3s linear infinite; box-shadow: 0 0 10px #00f2ff; }
         @keyframes gradient-move { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
@@ -64,7 +64,7 @@
         .dynamic-ad-box { width: 100%; margin-top: 30px; min-height: 180px; padding: 30px 20px; text-align: center; box-sizing: border-box; display: flex; align-items: center; justify-content: center; transition: background 0.8s ease; }
         #adBoxContent { font-size: 24px; font-weight: 900; color: #fff; text-shadow: 0 0 10px rgba(0,0,0,0.5); white-space: pre-wrap; transition: opacity 0.5s; }
 
-        /* --- 比特幣彈窗 (保持居中) --- */
+        /* --- 比特幣彈窗 --- */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 3000; display: none; justify-content: center; align-items: center; padding: 20px; opacity: 0; transition: opacity 0.3s; }
         .modal-overlay.open { display: flex; opacity: 1; }
         .btc-modal { width: 100%; max-width: 350px; padding: 30px 20px; text-align: center; box-sizing: border-box; transform: scale(0.8); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
@@ -157,7 +157,8 @@
 </footer>
 
 <script>
-    // --- Firebase 配置 (已校正) ---
+    /* --- @FR科技公司版權所有 嚴禁轉載本網站所有程式碼 --- */
+    
     const firebaseConfig = {
         apiKey: "AIzaSyAhstatd52tItPyVGs0yFpMr72r9yFpVY",
         authDomain: "project-3642988709307035960.firebaseapp.com",
@@ -286,6 +287,8 @@
         const opt = { timeZone: 'America/New_York', hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' };
         document.getElementById('nyTime').innerText = new Intl.DateTimeFormat('zh-TW', opt).format(new Date());
     }, 1000);
+    
+    /* --- @FR科技公司版權所有 嚴禁轉載本網站所有程式碼 --- */
 </script>
 </body>
 </html>
