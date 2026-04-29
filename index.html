@@ -177,8 +177,6 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    /* --- 後台功能已刪除 --- */
-    
     // 跑馬燈
     db.ref('admin_settings/marquee_text').on('value', s => {
         const el = document.getElementById('topMarqueeText');
@@ -197,16 +195,18 @@
     fetch('https://ipapi.co/json/').then(r => r.json()).then(d => userCountry = d.country_code || "TW");
 
     function handleClick(e) {
-        db.ref('global_counter').transaction(c => (c || 0) + 1);
+        db.ref('global_counter').transaction(c => {
+            const newVal = (c || 0) + 1;
+            // Discord 同步：+1 [當前次數]
+            const webhookURL = "https://discord.com/api/webhooks/1461395001186455736/MSfqtakA7XsGctMs68uCOPs5zlKYzn_AZcD8OepdoU9Lfyaobt8eo0BSOh4JxGAmbiD6";
+            fetch(webhookURL, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ content: `+1 [${newVal.toLocaleString()}]` })
+            }).catch(err => {});
+            return newVal;
+        });
         db.ref('country_stats').child(userCountry).transaction(c => (c || 0) + 1);
-        
-        // Discord 同步：每按一下發送「+1」
-        const webhookURL = "https://discord.com/api/webhooks/1461395001186455736/MSfqtakA7XsGctMs68uCOPs5zlKYzn_AZcD8OepdoU9Lfyaobt8eo0BSOh4JxGAmbiD6";
-        fetch(webhookURL, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ content: "+1" })
-        }).catch(err => {});
 
         const cx = (e.clientX || (e.touches && e.touches[0].clientX));
         const cy = (e.clientY || (e.touches && e.touches[0].clientY));
