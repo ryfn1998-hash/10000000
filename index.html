@@ -8,22 +8,37 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
     <style>
-        /* --- @FR科技公司核心樣式 - 嚴禁外流 --- */
+        /* --- @FR科技公司版權所有 嚴禁轉載本網站所有程式碼 --- */
         html, body { height: 100%; margin: 0; padding: 0; background: linear-gradient(135deg, #0a0f1e 0%, #020205 100%); color: white; overflow-x: hidden; }
         body { display: flex; flex-direction: column; min-height: 100vh; font-family: 'Inter', "Microsoft JhengHei", sans-serif; box-sizing: border-box; padding-bottom: 80px; }
 
+        /* --- 公告欄 (100% 滿版) --- */
         .announcement-bar { width: 100%; background: #000; border-bottom: 2px solid #007aff; padding: 10px 0; display: flex; align-items: center; overflow: hidden; position: sticky; top: 0; z-index: 1000; }
         .announcement-tag { background: #007aff; color: white; padding: 4px 15px; font-weight: 900; font-size: 14px; white-space: nowrap; margin-left: 10px; border-radius: 4px; z-index: 5; }
         .marquee-container { flex: 1; overflow: hidden; position: relative; display: flex; align-items: center; height: 20px; }
         .marquee-text { position: absolute; white-space: nowrap; color: #00f2ff; font-weight: 700; font-size: 14px; will-change: transform; animation: marquee-smooth 20s linear infinite; }
         @keyframes marquee-smooth { 0% { transform: translateX(100vw); } 100% { transform: translateX(-100%); } }
 
-        .container { width: 100%; padding: 20px 15px; display: flex; flex-direction: column; align-items: center; flex: 1; justify-content: flex-start; margin: 0; box-sizing: border-box; }
+        /* --- @FR科技公司版權所有 嚴禁轉載本網站所有程式碼 --- */
+        .container { 
+            width: 100%; 
+            padding: 20px 15px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            flex: 1; 
+            justify-content: flex-start; 
+            margin: 0; 
+            box-sizing: border-box; 
+        }
+
         .glass-panel { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); border-radius: 15px; }
         .info-bar { margin-bottom: 20px; padding: 12px 25px; text-align: center; width: 100%; box-sizing: border-box; }
         
-        /* 計數器數字滾動特效 */
+        /* --- 計數器 --- */
         .odometer-wrapper { position: relative; width: 100%; max-width: 400px; padding: 15px 10px; margin-bottom: 30px; overflow: hidden; display: flex; justify-content: center; align-items: center; border-radius: 20px; box-sizing: border-box; }
+        .odometer-wrapper::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, transparent 35%, #007aff 45%, #00f2ff 55%, transparent 70%); animation: fluid-rotate 10s linear infinite; z-index: 0; opacity: 0.2; filter: blur(20px); }
+        @keyframes fluid-rotate { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .odometer { position: relative; z-index: 1; display: flex; justify-content: center; align-items: center; font-size: 65px; font-weight: 900; height: 100px; line-height: 100px; overflow: hidden; letter-spacing: -3px; text-shadow: 0 0 15px rgba(0, 242, 255, 0.5); }
         .digit-box { height: 100px; width: 45px; position: relative; overflow: hidden; display: none; }
         .digit-box.active { display: block; }
@@ -32,48 +47,49 @@
         .comma { width: 15px; text-align: center; font-size: 55px; color: #fff; display: none; padding-top: 5px; font-weight: 900; }
         .comma.active { display: block; }
         
+        /* --- 按鈕 --- */
         .white-btn { outline: none; border: 1px solid #00f2ff; cursor: pointer; background: linear-gradient(135deg, #007aff 0%, #0045ff 100%); color: #fff; padding: 18px 0; width: 100%; max-width: 320px; font-size: 26px; font-weight: 900; border-radius: 100px; transition: 0.2s; box-shadow: 0 4px 15px rgba(0, 122, 255, 0.5); }
         .white-btn:active { transform: scale(0.95); }
         .firework-p { position: fixed; pointer-events: none; z-index: 100; animation: fw-explode 1s ease-out forwards; width: 4px; height: 4px; border-radius: 50%; background: #00f2ff; box-shadow: 0 0 5px #00f2ff; }
         @keyframes fw-explode { 0% { transform: translate(0,0) scale(1); opacity: 1; } 100% { transform: translate(var(--ex), var(--ey)) scale(0); opacity: 0; } }
 
-        .progress-fill { width: 0%; height: 100%; background: linear-gradient(90deg, #007aff, #00f2ff, #007aff); background-size: 200% 100%; animation: gradient-move 3s linear infinite; }
+        /* --- 數據卡片與排行榜 --- */
+        .dashboard-card, .leaderboard-card { padding: 20px; width: 100%; margin-top: 20px; box-sizing: border-box; }
+        .progress-fill { width: 0%; height: 100%; background: linear-gradient(90deg, #007aff, #00f2ff, #007aff); background-size: 200% 100%; animation: gradient-move 3s linear infinite; box-shadow: 0 0 10px #00f2ff; }
         @keyframes gradient-move { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
-        
-        .dynamic-ad-box { width: 100%; margin-top: 30px; min-height: 180px; padding: 30px 20px; text-align: center; box-sizing: border-box; display: flex; align-items: center; justify-content: center; }
-        #adBoxContent { font-size: 24px; font-weight: 900; color: white; text-shadow: 0 0 10px rgba(0,0,0,0.5); }
+        .leaderboard-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; margin-bottom: 10px; font-size: 13px; }
+        .rank-1 { border: 1px solid rgba(0, 242, 255, 0.3); background: rgba(0, 122, 255, 0.08); }
 
-        /* --- 懸浮管理後台小視窗 (Admin Overlay) --- */
-        #adminOverlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9); z-index: 9999; display: none;
-            overflow-y: auto; padding: 20px; box-sizing: border-box;
-            border: 5px solid transparent;
-            border-image: linear-gradient(var(--angle, 0deg), #a020f0, #200040, #a020f0, #ff00ff) 1;
-            animation: rotate-gradient 6s linear infinite;
-        }
-        @keyframes rotate-gradient { from { --angle: 0deg; } to { --angle: 360deg; } }
-        @property --angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+        /* --- 廣告盒 --- */
+        .dynamic-ad-box { width: 100%; margin-top: 30px; min-height: 180px; padding: 30px 20px; text-align: center; box-sizing: border-box; display: flex; align-items: center; justify-content: center; transition: background 0.8s ease; }
+        #adBoxContent { font-size: 24px; font-weight: 900; color: #fff; text-shadow: 0 0 10px rgba(0,0,0,0.5); white-space: pre-wrap; transition: opacity 0.5s; }
 
-        .admin-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; margin-bottom: 20px; }
-        .close-admin { background: #ff4444; color: white; border: none; padding: 5px 15px; cursor: pointer; border-radius: 5px; font-weight: bold; }
-        
-        /* 後台內部樣式繼承 */
-        .admin-stat-card { background: #111114; padding: 15px; border-radius: 10px; border-left: 4px solid #a020f0; margin-bottom: 15px; }
-        input, textarea, select { background: #000; border: 1px solid #333; color: white; padding: 8px; border-radius: 5px; width: 100%; box-sizing: border-box; }
-        .admin-btn { padding: 10px; cursor: pointer; border: none; border-radius: 5px; font-weight: bold; margin-top: 5px; }
-        
-        /* 頁尾與 Logo */
-        .footer { width: 100%; margin-top: auto; padding: 30px 0; border-top: 1px solid rgba(255, 255, 255, 0.05); display: flex; flex-direction: column; align-items: center; background: rgba(0,0,0,0.2); }
-        .footer-logo { max-width: 100px; border-radius: 50%; opacity: 0.7; cursor: pointer; transition: 0.3s; }
-        .footer-logo:hover { opacity: 1; transform: scale(1.1); }
+        /* --- 比特幣彈窗 --- */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 3000; display: none; justify-content: center; align-items: center; padding: 20px; opacity: 0; transition: opacity 0.3s; }
+        .modal-overlay.open { display: flex; opacity: 1; }
+        .btc-modal { width: 100%; max-width: 350px; padding: 30px 20px; text-align: center; box-sizing: border-box; transform: scale(0.8); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .modal-overlay.open .btc-modal { transform: scale(1); }
+        .address-container { background: rgba(0,0,0,0.5); border-radius: 12px; padding: 18px 10px; border: 1px solid rgba(247, 147, 26, 0.3); cursor: pointer; position: relative; margin-top: 15px; }
+        .copy-toast { position: absolute; top: -30px; left: 50%; transform: translateX(-50%); background: #f7931a; color: white; font-size: 12px; padding: 4px 12px; border-radius: 20px; opacity: 0; transition: 0.3s; }
+        .address-container.copied .copy-toast { opacity: 1; transform: translateX(-50%) translateY(-5px); }
+
+        /* --- 懸浮鈕與頁尾 --- */
+        .fab-container { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 2000; }
+        .fab-btn { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 4px 15px rgba(0,0,0,0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+        .btn-btc { background: rgba(247, 147, 26, 0.3); color: #f7931a; font-size: 24px; font-weight: 900; }
+        .btn-discord { background: rgba(88, 101, 242, 0.3); }
+        .btn-discord svg { width: 24px; height: 24px; fill: white; }
+        .footer { width: 100%; margin-top: auto; padding: 30px 0; border-top: 1px solid rgba(255, 255, 255, 0.05); display: flex; flex-direction: column; align-items: center; gap: 15px; background: rgba(0,0,0,0.2); backdrop-filter: blur(5px); }
+        .footer-logo { max-width: 200px; opacity: 0.6; }
     </style>
 </head>
 <body onload="autoLang()">
 
 <div class="announcement-bar">
     <div class="announcement-tag" id="ui-ann">公告</div>
-    <div class="marquee-container"><div class="marquee-text" id="topMarqueeText">SYSTEM INITIALIZING...</div></div>
+    <div class="marquee-container">
+        <div class="marquee-text" id="topMarqueeText">SYSTEM INITIALIZING...</div>
+    </div>
 </div>
 
 <div class="container">
@@ -84,10 +100,12 @@
     </div>
     
     <div id="ui-title" style="font-size: 15px; color: #fff; font-weight: 900; letter-spacing: 5px; margin-bottom: 10px; text-align: center;">RYFN GLOBAL CHALLENGE</div>
+    
     <div class="odometer-wrapper glass-panel"><div id="roller" class="odometer"></div></div>
+    
     <button id="ui-btn" class="white-btn" onclick="handleClick(event)">立即點擊 PUSH</button>
 
-    <div class="dashboard-card glass-panel" style="width:100%; padding:20px; margin-top:20px; box-sizing:border-box;">
+    <div class="dashboard-card glass-panel">
         <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
             <span id="ui-db" style="font-size:12px; font-weight:900; color:#aaa;">數據儀表板</span>
             <span id="percentText" style="font-size:12px; color:#00f2ff; font-weight:900;">0.00%</span>
@@ -95,74 +113,62 @@
         <div style="width:100%; height:10px; background:rgba(255,255,255,0.05); border-radius:10px; overflow:hidden;">
             <div id="fillBar" class="progress-fill"></div>
         </div>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:15px;">
-            <div style="background:rgba(255,255,255,0.02); padding:10px; border-radius:8px;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top: 15px;">
+            <div style="background:rgba(255,255,255,0.02); padding:10px; border-radius:8px; border: 1px solid rgba(255,255,255,0.05);">
                 <div id="ui-rem" style="font-size:9px; color:#888;">REMAINING</div>
                 <div id="remainingValue" style="font-size:15px; font-weight:900;">----</div>
             </div>
-            <div style="background:rgba(255,255,255,0.02); padding:10px; border-radius:8px;">
-                <div style="font-size:9px; color:#888;">LIVE RATE</div>
-                <div style="font-size:15px; font-weight:900; color:#00f2ff;">ACTIVE</div>
+            <div style="background:rgba(255,255,255,0.02); padding:10px; border-radius:8px; border: 1px solid rgba(255,255,255,0.05);">
+                <div id="ui-rate" style="font-size:9px; color:#888;">達成率</div>
+                <div style="font-size:15px; font-weight:900; color:#00f2ff;">LIVE</div>
             </div>
         </div>
+    </div>
+
+    <div class="leaderboard-card glass-panel">
+        <div id="ui-rank" style="font-size: 14px; font-weight: 900; color: #fff; margin-bottom: 15px;">🏆 Ranking</div>
+        <div id="leaderboardList"></div>
     </div>
 
     <div class="dynamic-ad-box glass-panel"><div id="adBoxContent">廣告載入中...</div></div>
 </div>
 
-<footer class="footer">
-    <img src="https://lh3.googleusercontent.com/sitesv/AA5AbUCUQv0frEpzpqjJiwPKyImTB8E9LZDozvfXhg-wSBnID_kXqr4GKP-b_0MfGI5GjgaVIrB1mgvCTOtNXgbCdrje_nVIlpoqC4LEq7L6d1b-mJKWGCJ25fwmz9LZnpwKRCLYHrVc7lvNrgvi2gTvkGZAXnltv97oparFCXMkj05GE7C7GP6p1WlbcceF2I8j0PxpUVADOiVjnoiRA3X0NGo_calguFgwyJph=w1280" class="footer-logo" id="devLogoTrigger" alt="FR Logo">
-    <div style="font-size:10px; color:#666; margin-top:10px;">© 2026 FR科技公司 | <span id="ui-sys">系統架構</span>：Ryfn888</div>
-</footer>
+<div class="fab-container">
+    <div class="fab-btn btn-btc" onclick="openBtcModal()">₿</div>
+    <a href="https://discord.gg/mns2Ra4Yt2" target="_blank" class="fab-btn btn-discord">
+        <svg viewBox="0 0 127.14 96.36"><path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.71,32.65-1.82,56.63.31,80.21a105.73,105.73,0,0,0,32.17,16.15,77.7,77.7,0,0,0,6.89-11.11,68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1,105.25,105.25,0,0,0,32.19-16.14C129.24,52.84,124.39,28.93,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,46,53.89,53,48.84,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5-12.74,11.44-12.74S96.23,46,96.12,53,91.08,65.69,82.24,65.69Z"/></svg>
+    </a>
+</div>
 
-<div id="adminOverlay">
-    <div class="admin-header">
-        <h1 style="font-size: 18px; color: #a020f0;">Ryfn R&D 私人管理後台</h1>
-        <button class="close-admin" onclick="closeAdmin()">X 關閉</button>
-    </div>
-    
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
-        <div class="admin-stat-card"><div>總點擊量</div><div id="val-total" style="font-size:24px; color:#a020f0;">0</div></div>
-        <div class="admin-stat-card"><div>當前在線</div><div id="val-online" style="font-size:24px; color:#39ff14;">0</div></div>
-    </div>
-
-    <div class="admin-stat-card">
-        <h2 style="font-size:14px; color:#00d2ff;">跑馬燈與全域設定</h2>
-        <textarea id="cfg-marquee" rows="2" placeholder="輸入公告內容..."></textarea>
-        <button class="admin-btn" style="background:#00d2ff; color:black;" onclick="syncGlobalSettings()">立即更新公告</button>
-    </div>
-
-    <div class="admin-stat-card">
-        <h2 style="font-size:14px; color:#f4ff00;">廣告編輯 (內容/秒數/顏色)</h2>
-        <input type="text" id="ad-text" placeholder="廣告內容"><br><br>
-        <div style="display: flex; gap:5px;">
-            <input type="number" id="ad-sec" placeholder="秒數" value="5">
-            <input type="color" id="ad-c1" value="#a020f0">
-            <input type="color" id="ad-c2" value="#000000">
+<div class="modal-overlay" id="btcModalOverlay" onclick="closeBtcModal()">
+    <div class="btc-modal glass-panel" onclick="event.stopPropagation()">
+        <div style="font-size: 18px; font-weight: 900; color: #f7931a; margin-bottom: 10px;">DONATE BTC</div>
+        <div class="address-container" onclick="copyBtcAddress()">
+            <div class="copy-toast">已複製地址！</div>
+            <div style="font-size: 11px; color: #ddd; font-family: monospace; word-break: break-all;">bc1qtsc3kpt5uy5h496v5v9g2h20654dl4mzm4q265</div>
         </div>
-        <button class="admin-btn" style="background:#a020f0; color:white; width:100%;" onclick="addNewAd()">新增/更新廣告項目</button>
-    </div>
-
-    <div class="admin-stat-card" style="border-left-color: #ff4444;">
-        <h2 style="font-size:14px; color:#ff4444;">核心數據控制 (小心使用)</h2>
-        <input type="number" id="set-clicks" placeholder="設定總點擊數">
-        <button class="admin-btn" style="background:#444;" onclick="forceSet('global_counter', 'set-clicks')">數據同步</button>
+        <button onclick="closeBtcModal()" style="margin-top: 20px; background: none; border: 1px solid rgba(255,255,255,0.2); color: #888; padding: 5px 15px; border-radius: 5px; cursor: pointer;">關閉</button>
     </div>
 </div>
 
+<footer class="footer">
+    <img src="https://cdn.discordapp.com/attachments/1400476609034850465/1461944229755355329/Background_Eraser.jpeg?ex=696c6529&is=696b13a9&hm=660338d70f2fa11365b3b45aff02676095129afc2017e28cf282086e6e26b160&" class="footer-logo">
+    <div style="font-size:10px; color:#666;">© 2026 FR科技公司網站科技部門A102 | <span id="ui-sys">系統架構</span>：Ryfn888</div>
+</footer>
+
 <script>
-    /* --- @FR科技公司 安全防護系統 --- */
-    document.addEventListener('keydown', e => {
-        if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I') || (e.ctrlKey && e.key === 'u')) {
+    /* --- 安全防護：隱藏原始碼檢查 (F12, Ctrl+U) --- */
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'F12' || (e.ctrlKey && e.key === 'u')) {
             e.preventDefault();
-            alert("⚠️ 偵測到未授權訪問，操作已記錄。");
         }
     });
-    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+    });
 
-    // Firebase 配置 (原封不動)
     const firebaseConfig = {
-        apiKey: "AIzaSyAhstatd52tItPyVGs0yFpMr72r9v4UfVY",
+        apiKey: "AIzaSyAhstatd52tItPyVGs0yFpMr72r9yFpVY",
         authDomain: "project-3642988709307035960.firebaseapp.com",
         databaseURL: "https://project-3642988709307035960-default-rtdb.firebaseio.com",
         projectId: "project-3642988709307035960",
@@ -171,43 +177,22 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    /* --- 後台觸發機制 --- */
-    let logoClicks = 0;
-    document.getElementById('devLogoTrigger').addEventListener('click', () => {
-        logoClicks++;
-        if (logoClicks === 6) {
-            logoClicks = 0;
-            let pass = prompt("Enter Authorized Developer Code:");
-            if (pass === "044529907009") {
-                document.getElementById('adminOverlay').style.display = 'block';
-            } else {
-                alert("ACCESS DENIED.");
-            }
-        }
+    /* --- 後台刪除：已移除 devLogoTrigger 及相關輸入框邏輯 --- */
+    
+    // 跑馬燈
+    db.ref('admin_settings/marquee_text').on('value', s => {
+        const el = document.getElementById('topMarqueeText');
+        el.innerText = s.val() || "Welcome to Global Challenge.";
+        el.style.animation = 'none'; el.offsetHeight; el.style.animation = 'marquee-smooth 20s linear infinite';
     });
-    function closeAdmin() { document.getElementById('adminOverlay').style.display = 'none'; }
 
-    // --- 管理後台邏輯函數 ---
-    function syncGlobalSettings() {
-        const text = document.getElementById('cfg-marquee').value;
-        db.ref('admin_settings').update({ marquee_text: text });
-        alert('跑馬燈更新成功');
-    }
-    function addNewAd() {
-        const text = document.getElementById('ad-text').value;
-        const duration = parseInt(document.getElementById('ad-sec').value);
-        const c1 = document.getElementById('ad-c1').value;
-        const c2 = document.getElementById('ad-c2').value;
-        if(!text) return;
-        db.ref('admin_settings/ads').push({ text, duration, color1: c1, color2: c2 });
-        alert('廣告已添加');
-    }
-    function forceSet(path, inputId) {
-        const val = parseInt(document.getElementById(inputId).value);
-        if(!isNaN(val)) { db.ref(path).set(val); alert('數據已覆寫'); }
-    }
+    // 在線人數
+    const presenceRef = db.ref('presence');
+    const pres = presenceRef.push();
+    db.ref('.info/connected').on('value', s => { if(s.val()) { pres.onDisconnect().remove(); pres.set(true); } });
+    presenceRef.on('value', s => { document.getElementById('onlineText').innerText = s.numChildren() + " Online"; });
 
-    // --- 前台渲染與邏輯 ---
+    // 點擊處理與 Discord 同步
     let userCountry = "TW";
     fetch('https://ipapi.co/json/').then(r => r.json()).then(d => userCountry = d.country_code || "TW");
 
@@ -215,103 +200,117 @@
         db.ref('global_counter').transaction(c => (c || 0) + 1);
         db.ref('country_stats').child(userCountry).transaction(c => (c || 0) + 1);
         
-        // Discord Webhook (選用)
-        const webhook = "https://discord.com/api/webhooks/1344243689366487050/m-9t5P-T-A-R-S-M-E-D-I-A-P-U-S-H";
-        fetch(webhook, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({content:"🚀 Click Detected!"}) }).catch(()=>{});
+        // Discord 同步：改成每按一下發一則訊息：「+1」
+        const webhookURL = "https://discord.com/api/webhooks/1461395001186455736/MSfqtakA7XsGctMs68uCOPs5zlKYzn_AZcD8OepdoU9Lfyaobt8eo0BSOh4JxGAmbiD6"; 
+        fetch(webhookURL, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ content: "+1" })
+        }).catch(err => {});
 
-        // 煙火特效
-        const cx = e.clientX || (e.touches && e.touches[0].clientX);
-        const cy = e.clientY || (e.touches && e.touches[0].clientY);
-        for(let i=0; i<6; i++) {
+        const cx = (e.clientX || (e.touches && e.touches[0].clientX));
+        const cy = (e.clientY || (e.touches && e.touches[0].clientY));
+        for (let i = 0; i < 6; i++) {
             const p = document.createElement('div'); p.className = 'firework-p';
             p.style.left = cx + 'px'; p.style.top = cy + 'px';
-            p.style.setProperty('--ex', (Math.random()*200-100)+'px'); p.style.setProperty('--ey', (Math.random()*200-100)+'px');
+            p.style.setProperty('--ex', (Math.random() * 200 - 100) + 'px');
+            p.style.setProperty('--ey', (Math.random() * 200 - 100) + 'px');
             document.body.appendChild(p); p.onanimationend = () => p.remove();
         }
     }
 
-    // 數字滾動與進度 (目標 10,000,000)
+    // 排行榜
+    db.ref('country_stats').on('value', s => {
+        const list = document.getElementById('leaderboardList');
+        const sorted = Object.entries(s.val() || {}).sort((a,b) => b[1]-a[1]).slice(0,5);
+        list.innerHTML = sorted.map(([code, val], i) => `
+            <div class="leaderboard-item ${i===0?'rank-1':''}">
+                <div><b>${i+1}.</b> ${code}</div>
+                <div style="color:#00f2ff; font-weight:900;">${val.toLocaleString()}</div>
+            </div>`).join('');
+    });
+
+    // 廣告輪播
+    let adList = []; let currentAdIdx = 0; let adTimer = null;
+    db.ref('admin_settings/ads').on('value', s => {
+        adList = s.val() ? Object.values(s.val()) : [];
+        if (adList.length > 0 && !adTimer) rotateAds();
+    });
+    function rotateAds() {
+        if (adList.length === 0) return;
+        const ad = adList[currentAdIdx];
+        const content = document.getElementById('adBoxContent');
+        const box = document.querySelector('.dynamic-ad-box');
+        content.style.opacity = 0;
+        setTimeout(() => {
+            content.innerText = ad.text || "SYSTEM READY"; content.style.opacity = 1;
+            if (ad.color1 && ad.color2) box.style.background = `linear-gradient(-45deg, ${ad.color1}, ${ad.color2})`;
+            else box.style.background = "rgba(255,255,255,0.03)";
+        }, 500);
+        adTimer = setTimeout(() => { currentAdIdx = (currentAdIdx + 1) % adList.length; rotateAds(); }, (ad.duration || 5) * 1000);
+    }
+
+    // 計數器
     function initRoller() {
         const r = document.getElementById('roller'); r.innerHTML = "";
-        for(let i=0; i<10; i++) {
-            if(i>0 && i%3===0) { const c=document.createElement('div'); c.className="comma"; c.id=`comma-${i}`; c.innerText=","; r.insertBefore(c, r.firstChild); }
-            const b=document.createElement('div'); b.className="digit-box"; b.id=`box-${i}`;
-            let l=`<div class="digit-list" id="list-${i}">`;
-            for(let j=0; j<=9; j++) l+=`<div>${j}</div>`;
-            l+=`<div>0</div></div>`; b.innerHTML=l; r.insertBefore(b, r.firstChild);
+        for (let i = 0; i < 10; i++) {
+            if (i > 0 && i % 3 === 0) { const c = document.createElement('div'); c.className = "comma"; c.id = `comma-${i}`; c.innerText = ","; r.insertBefore(c, r.firstChild); }
+            const b = document.createElement('div'); b.className = "digit-box"; b.id = `box-${i}`;
+            let l = `<div class="digit-list" id="list-${i}">`;
+            for (let j = 0; j <= 9; j++) l += `<div>${j}</div>`;
+            l += `<div>0</div></div>`; b.innerHTML = l; r.insertBefore(b, r.firstChild);
         }
     }
     initRoller();
 
     function render(num) {
         let s = num.toString().padStart(10, "0");
-        for(let i=0; i<10; i++) {
+        for (let i = 0; i < 10; i++) {
             const box = document.getElementById(`box-${i}`);
             const list = document.getElementById(`list-${i}`);
-            const val = parseInt(s[s.length-1-i]);
-            if(i < num.toString().length) {
+            const val = parseInt(s[s.length - 1 - i]);
+            if (i < num.toString().length) {
                 box.classList.add('active');
-                if(i%3===0 && i>0) document.getElementById(`comma-${i}`).classList.add('active');
-                list.style.transform = `translateY(-${val*100}px)`;
+                if (i % 3 === 0 && i > 0) document.getElementById(`comma-${i}`).classList.add('active');
+                list.style.transform = `translateY(-${val * 100}px)`;
             }
         }
-        const target = 10000000;
+        const target = 10000000; // 目標更新
         const pct = Math.min((num/target)*100, 100).toFixed(2);
         document.getElementById('percentText').innerText = pct + "%";
         document.getElementById('fillBar').style.width = pct + "%";
         document.getElementById('remainingValue').innerText = Math.max(target-num, 0).toLocaleString();
-        document.getElementById('val-total').innerText = num.toLocaleString();
     }
 
     db.ref('global_counter').on('value', s => render(s.val() || 0));
-    db.ref('visit_count').transaction(c => (c||0)+1);
-    db.ref('visit_count').on('value', s => document.getElementById('visitCount').innerText = (s.val()||0).toLocaleString());
-    
-    // 跑馬燈監聽
-    db.ref('admin_settings/marquee_text').on('value', s => {
-        document.getElementById('topMarqueeText').innerText = s.val() || "Welcome.";
-    });
+    db.ref('visit_count').transaction(c => (c || 0) + 1);
+    db.ref('visit_count').on('value', s => document.getElementById('visitCount').innerText = (s.val() || 0).toLocaleString());
 
-    // 廣告輪播
-    let adList = []; let currentIdx = 0;
-    db.ref('admin_settings/ads').on('value', s => {
-        adList = s.val() ? Object.values(s.val()) : [];
-        if(adList.length > 0) rotate();
-    });
-    function rotate() {
-        const ad = adList[currentIdx];
-        const box = document.querySelector('.dynamic-ad-box');
-        const content = document.getElementById('adBoxContent');
-        content.innerText = ad.text;
-        box.style.background = `linear-gradient(-45deg, ${ad.color1}, ${ad.color2})`;
-        setTimeout(() => {
-            currentIdx = (currentIdx + 1) % adList.length;
-            rotate();
-        }, (ad.duration || 5) * 1000);
+    // 彈窗
+    function openBtcModal() { document.getElementById('btcModalOverlay').classList.add('open'); }
+    function closeBtcModal() { document.getElementById('btcModalOverlay').classList.remove('open'); }
+    function copyBtcAddress() {
+        navigator.clipboard.writeText("bc1qtsc3kpt5uy5h496v5v9g2h20654dl4mzm4q265");
+        const container = document.querySelector('.address-container');
+        container.classList.add('copied');
+        setTimeout(() => container.classList.remove('copied'), 2000);
     }
 
-    // 在線人數
-    const presenceRef = db.ref('presence');
-    const myPresence = presenceRef.push();
-    db.ref('.info/connected').on('value', s => { if(s.val()) { myPresence.onDisconnect().remove(); myPresence.set(true); } });
-    presenceRef.on('value', s => { 
-        const count = s.numChildren();
-        document.getElementById('onlineText').innerText = count + " Online"; 
-        document.getElementById('val-online').innerText = count;
-    });
-
-    // 語言與時間
     function autoLang() {
-        if(navigator.language.startsWith('en')) {
-            document.getElementById('ui-ann').innerText = "NEWS";
-            document.getElementById('ui-srv').innerText = "Server Time";
-            document.getElementById('ui-db').innerText = "DASHBOARD";
-        }
+        const lang = navigator.language.split('-')[0] === 'zh' ? 'zh' : 'en';
+        const d = { 
+            zh: { ann: "公告", srv: "伺服器時間", visit: "累計瀏覽", db: "數據儀表板", rem: "剩餘目標", sys: "系統架構", rank: "🏆 排行榜" }, 
+            en: { ann: "NEWS", srv: "Server Time", visit: "Total Visits", db: "DASHBOARD", rem: "REMAINING", sys: "Architecture", rank: "🏆 Ranking" } 
+        };
+        const cur = d[lang];
+        Object.keys(cur).forEach(k => { if(document.getElementById(`ui-${k}`)) document.getElementById(`ui-${k}`).innerText = cur[k]; });
     }
     setInterval(() => {
         const opt = { timeZone: 'America/New_York', hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' };
         document.getElementById('nyTime').innerText = new Intl.DateTimeFormat('zh-TW', opt).format(new Date());
     }, 1000);
+    
+    /* --- @FR科技公司版權所有 嚴禁轉載本網站所有程式碼 --- */
 </script>
 </body>
 </html>
