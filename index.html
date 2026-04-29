@@ -152,7 +152,7 @@
 </div>
 
 <footer class="footer">
-    <img src="https://cdn.discordapp.com/attachments/1400476609034850465/1461944229755355329/Background_Eraser.jpeg?ex=696c6529&is=696b13a9&hm=660338d70f2fa11365b3b45aff02676095129afc2017e28cf282086e6e26b160&" class="footer-logo">
+    <img src="https://lh3.googleusercontent.com/sitesv/AA5AbUBAfF2PN08klwvE-keX7ds7_QqGtgm8mUXXLdqSMhADL33Wjf4OmykQJ0V1P18_D34VDqeWFWWJaWAy1P_GE8L8eGElzZR0tdM_g1SY2erlWJGXhuoDqPpqHU7P3Caf-_rvjOOZQs0Ap332_9IFcTsU_AbQHP3oH4H7mYIVIGeNEEym-nyZ_Q5Kd1nGPuEkmLmqrIwMS3iAaVfGiLY4J4dJSTA8lY2WT95c=w1280" class="footer-logo">
     <div style="font-size:10px; color:#666;">© 2026 FR科技公司網站科技部門A102 | <span id="ui-sys">系統架構</span>：Ryfn888</div>
 </footer>
 
@@ -177,7 +177,7 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    /* --- 後台刪除：已移除 devLogoTrigger 及相關輸入框邏輯 --- */
+    /* --- 後台功能已刪除 --- */
     
     // 跑馬燈
     db.ref('admin_settings/marquee_text').on('value', s => {
@@ -200,8 +200,8 @@
         db.ref('global_counter').transaction(c => (c || 0) + 1);
         db.ref('country_stats').child(userCountry).transaction(c => (c || 0) + 1);
         
-        // Discord 同步：改成每按一下發一則訊息：「+1」
-        const webhookURL = "https://discord.com/api/webhooks/1461395001186455736/MSfqtakA7XsGctMs68uCOPs5zlKYzn_AZcD8OepdoU9Lfyaobt8eo0BSOh4JxGAmbiD6"; 
+        // Discord 同步：每按一下發送「+1」
+        const webhookURL = "https://discord.com/api/webhooks/1461395001186455736/MSfqtakA7XsGctMs68uCOPs5zlKYzn_AZcD8OepdoU9Lfyaobt8eo0BSOh4JxGAmbiD6";
         fetch(webhookURL, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
@@ -275,7 +275,7 @@
                 list.style.transform = `translateY(-${val * 100}px)`;
             }
         }
-        const target = 10000000; // 目標更新
+        const target = 10000000;
         const pct = Math.min((num/target)*100, 100).toFixed(2);
         document.getElementById('percentText').innerText = pct + "%";
         document.getElementById('fillBar').style.width = pct + "%";
@@ -309,8 +309,6 @@
         const opt = { timeZone: 'America/New_York', hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' };
         document.getElementById('nyTime').innerText = new Intl.DateTimeFormat('zh-TW', opt).format(new Date());
     }, 1000);
-    
-    /* --- @FR科技公司版權所有 嚴禁轉載本網站所有程式碼 --- */
 </script>
 </body>
 </html>
